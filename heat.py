@@ -12,14 +12,6 @@ import matplotlib.pyplot as plt
 sess = tf.InteractiveSession()
 
 
-def DisplayArray(a, fmt='jpeg', rng=[0,1]):
-    """Display an array as a picture."""
-    a = (a - rng[0])/float(rng[1] - rng[0])*255
-    a = np.uint8(np.clip(a, 0, 255))
-    plt.imshow(a)
-    plt.pause(0.005)
-
-
 def make_kernel(a):
     """Transform a 2D array into a convolution kernel"""
     a = np.asarray(a)
@@ -45,7 +37,7 @@ def laplace(x):
 
 
 def exact_heat(u_init):
-    eps = tf.placeholder(tf.float32, shape=())
+    eps = tf.placeholder(tf.float32, shape=(10, 10))
     
     U  = tf.Variable(u_init)
     U_ = U + eps*laplace(U)
@@ -54,7 +46,9 @@ def exact_heat(u_init):
     step = tf.group(U.assign(U_))
     
     tf.global_variables_initializer().run()
-    step.run({eps: 1.0})
+    eps_ = 1e-1*np.arange(100).reshape(10, 10)
+    # eps_ = 1.0
+    step.run({eps: eps_})
     return U.eval()
 
 
